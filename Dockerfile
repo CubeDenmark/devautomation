@@ -20,7 +20,7 @@ RUN npm run build
 RUN npm install -g http-server
 
 # Step 8: Expose port 8080 to access the app
-EXPOSE 8080
+EXPOSE 8081
 
 # Step 9: Command to run the app using http-server
-CMD ["http-server", "dist", "-p", "8080"]
+CMD ["http-server", "dist", "-p", "8081"]
