@@ -1,61 +1,20 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_CREDENTIALS = 'dockerhub-credentials'
-        DOCKER_IMAGE_NAME = 'makxies24/vue-portfolio'
-        DOCKER_TAG = 'v1.0'
-    }
-
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/CubeDenmark/devautomation.git'
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    sh 'npm install'
-                }
-            }
-        }
-
-        stage('Build Vue.js App') {
-            steps {
-                script {
-                    sh 'npm run build'
-                }
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    sh 'sudo docker build -t $DOCKER_IMAGE_NAME:$DOCKER_TAG .'
-                }
-            }
-        }
-
-        stage('Push to Docker Hub') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: "$DOCKER_CREDENTIALS", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'echo $DOCKER_PASSWORD | sudo docker login -u $DOCKER_USERNAME --password-stdin'
-                    }
-                    sh 'sudo docker push $DOCKER_IMAGE_NAME:$DOCKER_TAG'
-                }
+                git url: 'https://github.com/CubeDenmark/devautomation.git', branch: 'main'
             }
         }
     }
 
     post {
         success {
-            echo 'Build and push to Docker Hub was successful!'
+            echo 'Checkout stage completed successfully!'
         }
         failure {
-            echo 'Something went wrong during the pipeline execution.'
+            echo 'Checkout stage failed. Please check the repository and branch configuration.'
         }
     }
 }
