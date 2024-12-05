@@ -8,10 +8,6 @@ pipeline {
         DOCKER_PORT = '80'
     }
 
-    triggers {
-        pollSCM('H/1 * * * *') // Poll the repository every 1 minute
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -57,7 +53,7 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    // Run the Docker container on port 80
+                    // Run the Docker container on port 8081
                     sh 'docker run -d -p $DOCKER_PORT:80 $DOCKER_IMAGE_NAME:$DOCKER_TAG'
                     // Verify the container is running
                     sh 'docker ps'
