@@ -5,7 +5,7 @@ pipeline {
         DOCKER_CREDENTIALS = 'dockerhub-credentials'
         DOCKER_IMAGE_NAME = 'makxies24/vue-portfolio'
         DOCKER_TAG = 'v1.0'
-        DOCKER_PORT = '80'
+        DOCKER_PORT = '8081'
     }
 
     stages {
