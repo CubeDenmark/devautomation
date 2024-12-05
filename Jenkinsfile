@@ -5,7 +5,7 @@ pipeline {
         DOCKER_CREDENTIALS = 'dockerhub-credentials'
         DOCKER_IMAGE_NAME = 'makxies24/vue-portfolio'
         DOCKER_TAG = 'v1.0'
-        DOCKER_PORT = '8081'
+        DOCKER_PORT = '80'
     }
 
     stages {
@@ -61,7 +61,7 @@ pipeline {
             }
         }
 
-        stage('Test App on Port 8081') {
+        stage('Test App on Port 80') {
             steps {
                 script {
                     // Optionally, you can add a curl or wget to test if the app is running
