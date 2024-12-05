@@ -1,5 +1,5 @@
-# Step 1: Use a lightweight base image (e.g., Alpine Linux)
-FROM node:21-alpine
+# Step 1: Use a lightweight base image (e.g., Alpine Linux) for building the app
+FROM node:21-alpine AS build-stage
 
 # Step 2: Set the working directory inside the container
 WORKDIR /app
@@ -16,11 +16,14 @@ COPY . .
 # Step 6: Build the Vue.js app (production build)
 RUN npm run build
 
-# Step 7: Install a simple static file server (http-server) to serve the build
-RUN npm install -g http-server
+# Step 7: Use Apache HTTP server (httpd) to serve the app
+FROM httpd:alpine
 
-# Step 8: Expose port 8080 to access the app
-EXPOSE 8081
+# Step 8: Copy the built Vue.js app to Apache's document root
+COPY --from=build-stage /app/dist/ /usr/local/apache2/htdocs/
 
-# Step 9: Command to run the app using http-server
-CMD ["http-server", "dist", "-p", "8081"]
+# Step 9: Expose port 80 to access the app
+EXPOSE 80
+
+# Step 10: Apache already runs in the foreground, no need to specify CMD
+# The default entry point for Apache is already set, so no need to specify it here
