@@ -1,12 +1,5 @@
-pipeline {
-    agent any
-    stages {
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    sh 'npm install'
-                }
-            }
-        }
+stage('Checkout') {
+    steps {
+        git branch: 'main', url: 'https://github.com/CubeDenmark/devautomation.git'
     }
 }
