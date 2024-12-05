@@ -44,15 +44,6 @@ pipeline {
                 }
             }
         }
-
-        post {
-            success {
-                echo 'Build and push to Docker Hub was successful!'
-            }
-            failure {
-                echo 'Something went wrong during the pipeline execution.'
-            }
-        }
     
     }
 }
