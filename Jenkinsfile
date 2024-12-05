@@ -54,7 +54,7 @@ pipeline {
             steps {
                 script {
                     // Run the Docker container on port 8081
-                    sh 'docker run -d -p $DOCKER_PORT:8080 $DOCKER_IMAGE_NAME:$DOCKER_TAG'
+                    sh 'docker run -d -p $DOCKER_PORT:8081 $DOCKER_IMAGE_NAME:$DOCKER_TAG'
                     // Verify the container is running
                     sh 'docker ps'
                 }
