@@ -17,7 +17,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    sh 'npm install'
+                    sh 'sudo npm install'
                 }
             }
         }
@@ -25,7 +25,7 @@ pipeline {
         stage('Build Vue.js App') {
             steps {
                 script {
-                    sh 'npm run build'
+                    sh 'sudo npm run build'
                 }
             }
         }
@@ -42,7 +42,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: "$DOCKER_CREDENTIALS", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'echo $DOCKER_PASSWORD | sudo docker login -u $DOCKER_USERNAME --password-stdin'
+                        sh 'sudo echo $DOCKER_PASSWORD | sudo docker login -u $DOCKER_USERNAME --password-stdin'
                     }
                     sh 'sudo docker push $DOCKER_IMAGE_NAME:$DOCKER_TAG'
                 }
