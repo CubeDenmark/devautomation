@@ -5,7 +5,6 @@ pipeline {
         DOCKER_CREDENTIALS = 'dockerhub-credentials'
         DOCKER_IMAGE_NAME = 'makxies24/vue-portfolio'
         DOCKER_TAG = 'v1.0'
-        DOCKER_PORT = '8081'
     }
 
     stages {
@@ -34,6 +33,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
+                    // Removed sudo
                     sh 'docker build -t $DOCKER_IMAGE_NAME:$DOCKER_TAG .'
                 }
             }
@@ -43,40 +43,13 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: "$DOCKER_CREDENTIALS", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        // Removed sudo
                         sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
                     }
+                    // Removed sudo
                     sh 'docker push $DOCKER_IMAGE_NAME:$DOCKER_TAG'
                 }
             }
-        }
-
-        stage('Run Docker Container') {
-            steps {
-                script {
-                    // Run the Docker container on port 8081
-                    sh 'docker run -d -p $DOCKER_PORT:8080 $DOCKER_IMAGE_NAME:$DOCKER_TAG'
-                    // Verify the container is running
-                    sh 'docker ps'
-                }
-            }
-        }
-
-        stage('Test App on Port 8081') {
-            steps {
-                script {
-                    // Optionally, you can add a curl or wget to test if the app is running
-                    sh 'curl http://localhost:$DOCKER_PORT'
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Build, push, and run Docker container was successful!'
-        }
-        failure {
-            echo 'Something went wrong during the pipeline execution.'
         }
     }
 }
