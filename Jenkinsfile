@@ -1,5 +1,10 @@
-stage('Checkout') {
-    steps {
-        git branch: 'main', url: 'https://github.com/CubeDenmark/devautomation.git'
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/CubeDenmark/devautomation.git'
+            }
+        }
     }
 }
