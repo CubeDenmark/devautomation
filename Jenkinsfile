@@ -1,9 +1,11 @@
 pipeline {
     agent any
     stages {
-        stage('Checkout') {
+        stage('Install Dependencies') {
             steps {
-                git 'https://github.com/CubeDenmark/devautomation.git'
+                script {
+                    sh 'sudo npm install'
+                }
             }
         }
     }
