@@ -5,7 +5,7 @@ pipeline {
         DOCKER_CREDENTIALS = 'dockerhub-credentials'
         DOCKER_IMAGE_NAME = 'makxies24/vue-portfolio'
         DOCKER_TAG = 'v1.0'
-        DOCKER_PORT = '80'
+        DOCKER_PORT = '8080' // External port to avoid conflicts
         CONTAINER_NAME = 'vue-portfolio-container'
     }
 
@@ -51,13 +51,15 @@ pipeline {
             }
         }
 
-        stage('Remove Existing Container') {
+        stage('Clean Up Existing Container') {
             steps {
                 script {
-                    // Stop and remove the existing container if it exists
+                    // Stop and remove the container if it exists
                     sh '''
                     if [ $(docker ps -q -f name=$CONTAINER_NAME) ]; then
                         docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
+                    elif [ $(docker ps -aq -f name=$CONTAINER_NAME) ]; then
+                        docker rm $CONTAINER_NAME
                     fi
                     '''
                 }
@@ -73,11 +75,11 @@ pipeline {
             }
         }
 
-        stage('Test App on Port 80') {
+        stage('Test App on Port') {
             steps {
                 script {
-                    // Test if the app is running
-                    sh 'curl http://localhost:$DOCKER_PORT'
+                    // Test if the application is running
+                    sh 'curl -s http://localhost:$DOCKER_PORT'
                 }
             }
         }
