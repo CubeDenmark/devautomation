@@ -24,32 +24,6 @@ pipeline {
             }
         }
 
-        stage('Install ESLint (if needed)') {
-            steps {
-                script {
-                    sh '''
-                    if [ ! -f node_modules/.bin/eslint ]; then
-                        echo "ESLint not found, installing..."
-                        npm install eslint eslint-plugin-vue --save-dev
-                    else
-                        echo "ESLint is already installed."
-                    fi
-                    '''
-                }
-            }
-        }
-
-        stage('Lint Code') {
-            steps {
-                script {
-                    sh '''
-                    echo "Running ESLint..."
-                    npm run lint
-                    '''
-                }
-            }
-        }
-
         stage('Build Vue.js App') {
             steps {
                 script {

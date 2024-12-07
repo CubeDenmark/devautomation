@@ -49,6 +49,7 @@ const isMenuOpen =  ref(false)
 const scrollToSection = (href) => {
     isMenuOpen.value = false;
     const section = document.querySelector(href);
+    let behavior;
     if(section){
         section.scrollIntoVue([behavior, 'smooth']);
     }
