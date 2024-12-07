@@ -19,16 +19,25 @@ pipeline {
         stage('Install Node.js v21 if Not Installed') {
             steps {
                 script {
-                    // Check if Node.js v21 is installed; install it if not
+                    // Install Node.js v21 using nvm if not already installed
                     sh '''
-                    if ! command -v node &> /dev/null || [ "$(node -v)" != "v21.0.0" ]; then
-                        echo "Node.js v21 is not installed. Installing..."
+                    # Install nvm if not already installed
+                    if [ ! -d "$HOME/.nvm" ]; then
+                        echo "Installing nvm..."
                         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-                        source ~/.nvm/nvm.sh
+                    fi
+                    
+                    # Initialize nvm
+                    export NVM_DIR="$HOME/.nvm"
+                    [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"
+
+                    # Check if Node.js v21 is installed; install it if not
+                    if ! nvm list | grep -q "v21.0.0"; then
+                        echo "Installing Node.js v21..."
                         nvm install 21
                         nvm alias default 21
                     else
-                        echo "Node.js v21 is already installed. Skipping installation."
+                        echo "Node.js v21 is already installed."
                     fi
                     '''
                 }
@@ -38,7 +47,13 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    sh 'npm install'
+                    // Use Node.js v21 to ensure compatibility
+                    sh '''
+                    export NVM_DIR="$HOME/.nvm"
+                    [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"
+                    nvm use 21
+                    npm install
+                    '''
                 }
             }
         }
@@ -46,7 +61,12 @@ pipeline {
         stage('Build Vue.js App') {
             steps {
                 script {
-                    sh 'npm run build'
+                    sh '''
+                    export NVM_DIR="$HOME/.nvm"
+                    [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"
+                    nvm use 21
+                    npm run build
+                    '''
                 }
             }
         }
