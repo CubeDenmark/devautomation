@@ -5,7 +5,7 @@ pipeline {
         DOCKER_CREDENTIALS = 'dockerhub-credentials'
         DOCKER_IMAGE_NAME = 'makxies24/vue-portfolio'
         DOCKER_TAG = 'v1.0'
-        DOCKER_PORT = '80' // External port to avoid conflicts
+        DOCKER_PORT = '80'
         CONTAINER_NAME = 'vue-portfolio-container'
     }
 
@@ -16,36 +16,29 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install Node.js v21 if Not Installed') {
             steps {
                 script {
-                    sh 'npm install'
-                }
-            }
-        }
-
-        stage('Install ESLint (if needed)') {
-            steps {
-                script {
+                    // Check if Node.js v21 is installed; install it if not
                     sh '''
-                    if [ ! -f node_modules/.bin/eslint ]; then
-                        echo "ESLint not found, installing..."
-                        npm install eslint eslint-plugin-vue --save-dev
+                    if ! command -v node &> /dev/null || [ "$(node -v)" != "v21.0.0" ]; then
+                        echo "Node.js v21 is not installed. Installing..."
+                        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+                        source ~/.nvm/nvm.sh
+                        nvm install 21
+                        nvm alias default 21
                     else
-                        echo "ESLint is already installed."
+                        echo "Node.js v21 is already installed. Skipping installation."
                     fi
                     '''
                 }
             }
         }
 
-        stage('Lint Code') {
+        stage('Install Dependencies') {
             steps {
                 script {
-                    sh '''
-                    echo "Running ESLint..."
-                    npm run lint
-                    '''
+                    sh 'npm install'
                 }
             }
         }
@@ -80,7 +73,6 @@ pipeline {
         stage('Clean Up Existing Container') {
             steps {
                 script {
-                    // Stop and remove the container if it exists
                     sh '''
                     if [ $(docker ps -q -f name=$CONTAINER_NAME) ]; then
                         docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
@@ -95,7 +87,6 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    // Run the Docker container with the specified name
                     sh 'docker run -d --name $CONTAINER_NAME -p $DOCKER_PORT:80 $DOCKER_IMAGE_NAME:$DOCKER_TAG'
                 }
             }
@@ -104,7 +95,6 @@ pipeline {
         stage('Test App on Port') {
             steps {
                 script {
-                    // Test if the application is running
                     sh 'curl -s http://localhost:$DOCKER_PORT'
                 }
             }
