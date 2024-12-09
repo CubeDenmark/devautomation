@@ -4,8 +4,8 @@ pipeline {
     environment {
         DOCKER_CREDENTIALS = 'dockerhub-credentials'
         DOCKER_IMAGE_NAME = 'makxies24/vue-portfolio'
-        DOCKER_TAG = 'v1.0'
-        DOCKER_PORT = '80' // External port to avoid conflicts
+        DOCKER_TAG = "${env.BUILD_NUMBER}"
+        DOCKER_PORT = '80'
         CONTAINER_NAME = 'vue-portfolio-container'
     }
 
@@ -16,10 +16,36 @@ pipeline {
             }
         }
 
+        stage('Install Node.js v21') {
+            steps {
+                script {
+                    sh '''
+                    if [ ! -d "$HOME/.nvm" ]; then
+                        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+                    fi
+
+                    export NVM_DIR="$HOME/.nvm"
+                    [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"
+
+                    if ! nvm list | grep -q "v21.0.0"; then
+                        nvm install 21
+                        nvm alias default 21
+                    fi
+                    nvm use 21
+                    '''
+                }
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 script {
-                    sh 'npm install'
+                    sh '''
+                    export NVM_DIR="$HOME/.nvm"
+                    [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"
+                    nvm use 21
+                    npm install
+                    '''
                 }
             }
         }
@@ -27,7 +53,12 @@ pipeline {
         stage('Build Vue.js App') {
             steps {
                 script {
-                    sh 'npm run build'
+                    sh '''
+                    export NVM_DIR="$HOME/.nvm"
+                    [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"
+                    nvm use 21
+                    npm run build
+                    '''
                 }
             }
         }
@@ -54,13 +85,9 @@ pipeline {
         stage('Clean Up Existing Container') {
             steps {
                 script {
-                    // Stop and remove the container if it exists
                     sh '''
-                    if [ $(docker ps -q -f name=$CONTAINER_NAME) ]; then
-                        docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME
-                    elif [ $(docker ps -aq -f name=$CONTAINER_NAME) ]; then
-                        docker rm $CONTAINER_NAME
-                    fi
+                    docker ps -q -f name=$CONTAINER_NAME | xargs -r docker stop
+                    docker ps -aq -f name=$CONTAINER_NAME | xargs -r docker rm
                     '''
                 }
             }
@@ -69,7 +96,6 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    // Run the Docker container with the specified name
                     sh 'docker run -d --name $CONTAINER_NAME -p $DOCKER_PORT:80 $DOCKER_IMAGE_NAME:$DOCKER_TAG'
                 }
             }
@@ -78,8 +104,13 @@ pipeline {
         stage('Test App on Port') {
             steps {
                 script {
-                    // Test if the application is running
-                    sh 'curl -s http://localhost:$DOCKER_PORT'
+                    sh '''
+                    status=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:$DOCKER_PORT)
+                    if [ "$status" -ne 200 ]; then
+                        echo "Application failed to respond with 200 OK."
+                        exit 1
+                    fi
+                    '''
                 }
             }
         }
@@ -88,9 +119,11 @@ pipeline {
     post {
         success {
             echo 'Build, push, and run Docker container was successful!'
+            cleanWs()
         }
         failure {
             echo 'Something went wrong during the pipeline execution.'
+            cleanWs()
         }
     }
 }
