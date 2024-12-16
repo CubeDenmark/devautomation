@@ -9,10 +9,19 @@
             <div class="grid lg:grid-cols-2 gap-10 xl:gap-14 relative pt-24 lg:max-w-none max-w-2xl md:max-w-3xl mx-auto">
                 <div class="lg:py-6">
                     <div class="text-center lg:text-left">
-                      
+                        <h1 class="pt-4 text-white font-bold text-4xl md:text-5xl lg:text-6xl">
+                            Hi, I'm <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-end">
+                                Denmark
+                            </span>😁
+                        </h1>
                     </div>
                     <p class="text-gray-300 pt-8 text-center lg:text-left mx-auto max-w-xl">
-                       
+                        Motivated and detail-oriented web developer with experience in both
+                        frontend and backend development. Proficient inbuilding dynamic,
+                        efficient, and user-friendly web applications. Eager to contribute 
+                        to team success through hard work,attention to detail, and a passion
+                        for continuous improvement. Proven ability to handle multiple projects, 
+                        meetdeadlines, and deliver high-quality solutions
                     </p>
                     <div class="flex items-center gap-3 pt-9 flex-col sm:flex-row sm:mx-auto lg:max-0">
                         <button class="px-6 md:px-7 py-3 rounded-full relative group w-full sm:w-max flex justify-center">
