@@ -1,5 +1,5 @@
 <template>
-   <div class="bg-[#111827] min-h-screen">
+   <div class="bg-[#343434] min-h-screen">
     <NavBar />
     <HeroSection />
     <ServicesSection />

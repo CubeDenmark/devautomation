@@ -2,7 +2,7 @@
     <section class="text-white mt-20" id="services">
         
             <div v-for="service in services" :key="service.id" data-aos="fade-up"
-            class="px-8 py-12 rounded-xl bg-[#111a3e] shadow-lg border border-[#1f1641]"
+            class="px-8 py-12 rounded-xl bg-[#2d2d2d] shadow-lg border border-[#2d2d2d]"
             >
                 <div class="mx-auto h-24 text-center xl:h-28 xl:w-28">
                     <div>
@@ -10,7 +10,7 @@
                     </div>
                 </div>
                 <div class="text-center">
-                    <h3 class="pt-8 text-lg font-semibold uppercase text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary lg:text-xl">
+                    <h3 class="pt-8 text-lg font-semibold uppercase text-transparent bg-clip-text bg-gradient-to-r from-primary to-end lg:text-xl">
                         {{ service.name }}
                     </h3>
                     <p class="text-gray pt-4 text-sm group-hover:text-white md:text-base">
